@@ -64,6 +64,13 @@ class ViewController: UIViewController,
     // Exercise 1: Assign the result of MushroomGenerator.maybeGenerateMushroomPowerup()
     // to a variable. Print something if it's not nil
     // ...
+      guard let powerup = MushroomGenerator.maybeGenerateMushroomPowerup() else {
+          print("does not have powerup")
+          return
+      }
+      useMushroomPowerupOnMario(powerup: powerup)
+      
+      
     
     // Exercise 2: Use the powerup on Mario using the useMushroomPowerupOnMario function
     // ...
@@ -82,7 +89,31 @@ class ViewController: UIViewController,
   
   // Exercise 3: Decipher the mystery box and apply the correct effect on mario
   private func decipher(mysteryBox: MysteryBox) {
-    
+      print(mysteryBox.mysteryEffect)
+      guard let mystryDictionary = mysteryBox.mysteryEffect as? [String: String] else {
+          assertionFailure("expection effect is dictionarly of type [String: String]")
+          return
+      }
+      guard let effect = mystryDictionary["effect"] else {
+          assertionFailure("expected effedt as key in dictionary")
+          return
+      }
+      switch effect {
+      case "rotate":
+          rotate(kart: kartView0)
+          rotate(kart: kartView1)
+          rotate(kart: kartView2)
+      case "scale":
+          scale(kart: kartView0)
+          scale(kart: kartView1)
+          scale(kart: kartView2)
+      case "translate":
+          translate(kart: kartView0, by: view.bounds.width)
+          translate(kart: kartView1, by: view.bounds.width)
+          translate(kart: kartView2, by: view.bounds.width)
+      default:
+          assertionFailure("expecting rotate,scale and translate")
+      }
   }
   
   private func translate(kart: UIView?,
@@ -96,13 +127,13 @@ class ViewController: UIViewController,
   
   private func rotate(kart: UIView) {
     UIView.animate(withDuration: 0.25) {
-      self.kartView1.transform = self.kartView1.transform.rotated(by: 180.0)
+      kart.transform = kart.transform.rotated(by: 180.0)
     }
   }
   
   private func scale(kart: UIView) {
     UIView.animate(withDuration: 0.25) {
-      self.kartView1.transform = self.kartView1.transform.scaledBy(x: 1.05, y: 1.05)
+      kart.transform = kart.transform.scaledBy(x: 1.05, y: 1.05)
     }
   }
   
@@ -125,6 +156,7 @@ class ViewController: UIViewController,
   // This function is called before dismissing the settings screen
   func didChangeSettings(settings: [String : Any]) {
     self.settings = settings
+      print(settings)
     applyNumKartsSetting(settings)
     applyKartSizeSetting(settings)
     applySpeedMultiplierSetting(settings)
@@ -132,17 +164,35 @@ class ViewController: UIViewController,
   
   // Exercise 4: Implement applyNumKartsSetting to show the correct number of karts
   func applyNumKartsSetting(_ settings: [String : Any]) {
-    
+      guard let numOfKarts = settings["numKarts"] as? Int else {
+          assertionFailure("expecting kart size int but got nil")
+          return
+      }
+      kartView0.isHidden = numOfKarts < 2
+      kartView2.isHidden = numOfKarts < 3
   }
   
   // Exercise 5: Implement applyKartSizeSetting to set the correct kart size
   func applyKartSizeSetting(_ settings: [String : Any]) {
-    
+      guard let sizeMulitiplier = settings["kartSize"] as? Int else {
+          assertionFailure("kart size is must be int not nil")
+          return
+      }
+      let scaleBy = 1.0 + 0.05 * Double(sizeMulitiplier)
+      let transform = CGAffineTransformIdentity.scaledBy(x: scaleBy,y: scaleBy)
+      kartView0.transform = transform
+      kartView1.transform = transform
+      kartView2.transform = transform
   }
   
   // Exercise 6: Implement applySpeedMultiplierSetting to set the correct speed
   func applySpeedMultiplierSetting(_ settings: [String : Any]) {
-    
+      guard let speedMultiplier = settings["speedMultiplier"] as? Int else {
+          assertionFailure("speed multiplier must be int not nil")
+          return
+      }
+      self.speedMultiplier = Double(speedMultiplier)
+      
   }
 }
 
