@@ -2,8 +2,8 @@
 Starter project for iOS 101 Lab 2
 
 
-##Features
-###Required Features
+## Features
+### Required Features
 The provided XCode project has been annotated with comments to dictate where you should put your code. **You should only changes parts of the code where instructed.** You will be filling in functions to complete the following features:
 
 - [x] Print something if the optional has a non-nil value
